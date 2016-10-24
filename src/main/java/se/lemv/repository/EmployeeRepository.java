@@ -21,8 +21,15 @@ public class EmployeeRepository extends BaseCRUDRepository {
 		}
 	}
 	
-	public Collection<Employee> getEmployeesByDepartment(Long departmentId) {
-		
-		return null;
+	public Collection<Employee> getEmployeesByDepartment(Long departmentId) throws RepositoryException {
+		try{
+			manager = getManager();
+			return manager.createQuery("SELECT e FROM Employee e JOIN FETCH e.departments WHERE d.id = :id", Employee.class)
+					.setParameter("id", departmentId).getResultList();
+		} catch (PersistenceException e) {
+			throw new RepositoryException("Could not get Employee by Department id: " + departmentId, e);
+		} finally {
+			manager.close();
+		}
 	}
 }
